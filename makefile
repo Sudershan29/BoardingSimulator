@@ -1,11 +1,19 @@
+CXX := g++
+CXXFLAGS := -std=c++20 -Wall -Wextra
+LDFLAGS :=
 
-CXX = g++
-CXXFLAGS = -std=c++20
+OBJDIR := obj
+BINDIR := bin
 
-all: run
+EXECUTABLE := $(BINDIR)/run
 
-run: run.cpp
-	$(CXX) $(CXXFLAGS) -o run run.cpp flight.cpp
+.PHONY: all clean
+
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): run.cpp
+	@mkdir -p $(BINDIR)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
 
 clean:
-	rm -f run
+	rm -rf $(OBJDIR) $(BINDIR)

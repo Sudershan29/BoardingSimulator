@@ -32,6 +32,17 @@ struct FlightModel
         economy  = {_economyRows, _economyPerRow};
     }
 
+    FlightModel(FlightModel const &m) : name(m.name), totalPassengers(m.totalPassengers), totalRows(m.totalRows), business(m.business), economy(m.economy) { }
+
+    FlightModel& operator=(FlightModel const &m) {
+        name = m.name;
+        totalPassengers = m.totalPassengers;
+        totalRows = m.totalRows;
+        business = m.business;
+        economy = m.economy;
+        return *this;
+    }
+
     bool isWindow(char const &seat, bool businessClass) const
     {
         int seatNumber = seat - 'A' + 1;

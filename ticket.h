@@ -22,6 +22,8 @@ public:
         isMiddle   = m.isMiddle(seat, isBusiness);
     }
 
+    void setBoardingGroup(int _boardingGroup) { boardingGroup = _boardingGroup; }
+
     char getSeat() const { return seat; }
 
     int getRow() const { return row; }
@@ -34,15 +36,17 @@ public:
 
     bool isAisleSeat() const {  return !isWindow && !isMiddle; }
 
+    int getBoardingGroup() const { return boardingGroup; }
+
     friend ostream& operator<<(ostream& os, Ticket const &t){
         os << std::to_string(t.row) + t.seat;
         return os;
     }
 
 private:
-    char seat, boardingGroup;
+    char seat;
     bool isBusiness, isWindow, isMiddle;
-    int  row;
+    int  row, boardingGroup;
 };
 
 #endif
