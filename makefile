@@ -6,14 +6,19 @@ OBJDIR := obj
 BINDIR := bin
 
 EXECUTABLE := $(BINDIR)/run
+SIMULATION := $(BINDIR)/simulation
 
 .PHONY: all clean
 
-all: $(EXECUTABLE)
+all: $(EXECUTABLE) $(simulation)
 
-$(EXECUTABLE): run.cpp
+run: run.cpp
 	@mkdir -p $(BINDIR)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $(EXECUTABLE)
+
+simulation: simulation.cpp
+	@mkdir -p $(BINDIR)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $(SIMULATION)
 
 clean:
 	rm -rf $(OBJDIR) $(BINDIR)
