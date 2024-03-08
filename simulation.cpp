@@ -1,29 +1,54 @@
 
 #include <iostream>
+#include <vector>
 #include "simulation.h"
 
 using namespace flightSimulator;
 
 using std::cout;
-int constexpr ITER = 100;
+int ITER = 100;
 
-int main()
+/*
+
+    USAGE:
+
+    ./bin/simulation                    // DEFAULT
+
+    ./bin/simulation 100 privatejet.ini // CUSTOM
+
+*/
+
+int main(int argc, char **argv)
 {
+    if(argc >= 2)
+        ITER = std::stoi(argv[1]);
+
+    if (argc >= 3)
+    {
+        config.extend("config/" + string(argv[2]));
+        BOEING_737_700.refresh();
+    }
+
+    // Turning the graphics off
     config.set("Simulation", "show", 0);
 
-    BoardingSimulator<WindowMiddleAisle> wMa(BOEING_737_700);
-    BoardingSimulator<SteffenModified> sM(BOEING_737_700);
-    BoardingSimulator<FrontToBack> fTb(BOEING_737_700);
-    BoardingSimulator<BackToFront> bTf(BOEING_737_700);
-    BoardingSimulator<RandomBoarding> rB(BOEING_737_700);
+    vector<unique_ptr<SimulationVisitor>> simulations;
 
-    wMa(ITER);
-    sM(ITER);
-    fTb(ITER);
-    bTf(ITER);
-    rB(ITER);
+    for (auto strategy : {"WindowMiddleAisle", "SteffenModified", "FrontToBack", "BackToFront", "RandomBoarding"})
+        simulations.push_back(getSimulation(strategy, BOEING_737_700));
 
-    cout << wMa << sM << fTb << bTf << rB;
+    /*
+
+        Feel free to test your own strategy and compare with other strategies
+
+        unique_ptr<SimulationVisitor> yourStrategy = Simulation<MonkeyStrat>(BOEING_737_700);
+        simulation.push_back(yourStrategy);
+    */
+
+    for(auto &simulation: simulations){
+        simulation->simulate(ITER);
+        simulation->printResults(cout);
+    }
 
     return 0;
 }

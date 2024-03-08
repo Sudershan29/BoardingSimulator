@@ -10,8 +10,6 @@ SIMULATION := $(BINDIR)/simulation
 
 .PHONY: all clean
 
-all: $(EXECUTABLE) $(simulation)
-
 run: run.cpp
 	@mkdir -p $(BINDIR)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $(EXECUTABLE)

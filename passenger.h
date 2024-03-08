@@ -2,6 +2,7 @@
 #define passsenger_h
 
 #include <iostream>
+#include <memory>
 #include <vector>
 #include <string>
 #include "rng.h"
@@ -10,6 +11,8 @@
 #include "quantum.h"
 
 using std::string;
+using std::unique_ptr;
+using std::make_unique;
 
 namespace flightSimulator
 {
@@ -25,17 +28,17 @@ namespace flightSimulator
 
     struct Passenger
     {
-        Passenger(string name, Ticket const &t) : name(name), ticket(t)
+        Passenger(string name, Ticket const &t) : name(name), ticket(make_unique<Ticket>(t))
         {
             arrivalTime = arrivalTimeGenerator.getNumber();
         }
 
         string name;
-        Ticket ticket;
+        unique_ptr<Ticket> ticket;
         int arrivalTime; // This orders the users
         int bags;
 
-        Passenger(Passenger const &p) : name(p.name), ticket(p.ticket), arrivalTime(p.arrivalTime)
+        Passenger(Passenger const &p) : name(p.name), ticket(make_unique<Ticket>(*p.ticket)), arrivalTime(p.arrivalTime)
         {
             bags = passengerBags.getNumber();
         }
@@ -43,17 +46,17 @@ namespace flightSimulator
         Passenger &operator=(Passenger const &p)
         {
             name = p.name;
-            ticket = p.ticket;
+            ticket = make_unique<Ticket>(*p.ticket);
             arrivalTime = p.arrivalTime;
             return *this;
         }
 
-        // Passenger(Passenger &&p) {
-        //     ticket = std::move(p.ticket);
-        //     name = p.name;
-        //     arrivalTime = p.arrivalTime;
-        //     bags = p.bags;
-        // }
+        Passenger(Passenger &&p) {
+            ticket = std::move(p.ticket);
+            name = p.name;
+            arrivalTime = p.arrivalTime;
+            bags = p.bags;
+        }
 
         TimeQuantum UnloadingTime() const
         {

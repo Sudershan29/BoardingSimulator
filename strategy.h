@@ -24,9 +24,6 @@ namespace flightSimulator
             t.getName()
         } -> std::convertible_to<string_view>;
         {
-            T(model)
-        } -> std::convertible_to<T>;
-        {
             T(t2)
         } -> std::convertible_to<T>;
     };
@@ -169,10 +166,10 @@ namespace flightSimulator
     */
     struct CompareBoardingGroups{
         bool compare(Passenger const &p1, Passenger const &p2) const {
-            if(p1.ticket.getBoardingGroup() == p2.ticket.getBoardingGroup())
+            if (p1.ticket->getBoardingGroup() == p2.ticket->getBoardingGroup())
                 return p1.arrivalTime < p2.arrivalTime;
 
-            return p1.ticket.getBoardingGroup() < p2.ticket.getBoardingGroup();
+            return p1.ticket->getBoardingGroup() < p2.ticket->getBoardingGroup();
         }
     };
 }

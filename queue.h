@@ -61,21 +61,31 @@ namespace flightSimulator
             passengers.resize(model.totalRows);
         }
 
-        // FlightQ(FlightQ const &f) {
-        //     passengers = f.passengers;
-        //     statuses = f.statuses;
-        //     countdown = f.countdown;
-        //     isMySeat = f.isMySeat;
-        //     waitTime = f.waitTime;
-        //     sitDown = f.sitDown;
-        //     front = f.front;
-        //     back = f.back;
-        //     inQ = f.inQ;
-        // }
+        FlightQ(FlightQ const &f){
+            for(auto const &p : f.passengers)
+                passengers.push_back(make_unique<Passenger>(*p));
 
-        FlightQ(FlightQ const &f) = delete;
+            statuses = f.statuses;
+            countdown = f.countdown;
+            isMySeat = f.isMySeat;
+            waitTime = f.waitTime;
+            sitDown = f.sitDown;
+            front = f.front;
+            back = f.back;
+            inQ = f.inQ;   
+        }
 
-        FlightQ &operator=(FlightQ const &f) = delete;
+        FlightQ(FlightQ &&f){
+            passengers = std::move(f.passengers);
+            statuses = std::move(f.statuses);
+            countdown = std::move(f.countdown);
+            isMySeat = f.isMySeat;
+            waitTime = f.waitTime;
+            sitDown = f.sitDown;
+            front = f.front;
+            back = f.back;
+            inQ = f.inQ;   
+        }
 
         // O(n)
         void Move()
@@ -151,7 +161,7 @@ namespace flightSimulator
                 return os;
             }
 
-            os << passengers[idx]->ticket;
+            os << *passengers[idx]->ticket;
             return os;
         }
 

@@ -21,9 +21,7 @@ namespace flightSimulator
         string filename;
         unordered_map<string, unordered_map<string, string>> config;
 
-    public:
-        Config(string const filename)
-        {
+        void extractFromFile(std::string const &filename){
             std::ifstream file(filename);
 
             if (!file.is_open())
@@ -54,6 +52,12 @@ namespace flightSimulator
                     config[currentSection][key] = value;
                 }
             }
+        }
+
+    public:
+        Config(string const filename)
+        {
+            extractFromFile(filename);
         }
 
         string get(string const &section, string const &key)
@@ -93,6 +97,10 @@ namespace flightSimulator
         void set(string const &section, string const &key, T const &value)
         {
             config[section][key] = std::to_string(value);
+        }
+
+        void extend(string const &filename){
+            extractFromFile(filename);
         }
     };
 

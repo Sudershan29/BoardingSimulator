@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <memory>
 #include <functional>
 #define FMT_HEADER_ONLY
 #include <fmt/format.h>
@@ -17,6 +18,8 @@ using std::ostream;
 using std::function;
 using std::pair;
 using std::string;
+using std::unique_ptr;
+using std::make_unique;
 
 namespace flightSimulator
 {
@@ -104,7 +107,7 @@ namespace flightSimulator
     class SeatMap
     {
         int totalRows;
-        vector<Seat> seats;
+        vector<unique_ptr<Seat>> seats;
 
     public:
         SeatMap(FlightModel const &model)
@@ -112,9 +115,20 @@ namespace flightSimulator
             totalRows = model.totalRows;
             for (int i = 0; i < model.totalRows; i++)
                 if (i < model.business.rows)
-                    seats.push_back(Seat(model.business.perRow, i));
+                    seats.push_back(make_unique<Seat>(model.business.perRow, i));
                 else
-                    seats.push_back(Seat(model.economy.perRow, i));
+                    seats.push_back(make_unique<Seat>(model.economy.perRow, i));
+        }
+
+        SeatMap(SeatMap const &s) {
+            totalRows = s.totalRows;
+            for(int i = 0; i < totalRows; i++)
+                seats.push_back(make_unique<Seat>(*s.seats[i]));
+        }
+
+        SeatMap(SeatMap &&s) {
+            totalRows = s.totalRows;
+            seats = std::move(s.seats);
         }
 
         /*
@@ -122,30 +136,30 @@ namespace flightSimulator
         */
         int peopleInMyWay(int row, int seat)
         {
-            return seats[row].aheadOfMe(seat);
+            return seats[row]->aheadOfMe(seat);
         }
 
         void sitDown(int row, int seat)
         {
-            seats[row - 1].sitDown(seat);
+            seats[row - 1]->sitDown(seat);
         }
 
         void print(ostream &os, function<void(ostream &, int)> const qPrintFunction)
         {
             for (auto const &seat : seats)
-                os << std::pair(seat, qPrintFunction) << "\n";
+                os << std::pair(*seat, qPrintFunction) << "\n";
         }
 
         TimeQuantum waitTime(Passenger const &p)
         {
             TimeQuantum result = p.UnloadingTime();
-            result += TimeQuantum(peopleInMyWay(p.ticket.getRow() - 1, p.ticket.getSeatIdx())) * config.getInt("Quantum", "people_wait_time");
+            result += TimeQuantum(peopleInMyWay(p.ticket->getRow() - 1, p.ticket->getSeatIdx())) * config.getInt("Quantum", "people_wait_time");
             return result;
         }
 
         void deplane(){
             for(auto &seat : seats)
-                seat.deplane();
+                seat->deplane();
         }
     };
 }

@@ -50,6 +50,16 @@ namespace flightSimulator
             return *this;
         }
 
+        ~FlightModel() = default;
+
+        void refresh(){
+            name = config.get("Flight", "name"),
+            totalPassengers = config.getInt("Flight", "total_seats"),
+            totalRows = config.getInt("Flight", "total_rows"),
+            business = {config.getInt("Flight", "business_class_rows"), config.getInt("Flight", "business_class_per_row")};
+            economy = {config.getInt("Flight", "economy_class_rows"), config.getInt("Flight", "economy_class_per_row")};
+        }
+
         bool isWindow(char const &seat, bool businessClass) const
         {
             int seatNumber = seat - 'A' + 1;
@@ -87,7 +97,7 @@ namespace flightSimulator
         }
     };
 
-    FlightModel const BOEING_737_700{
+    FlightModel BOEING_737_700{
         config.get("Flight", "name"),
         config.getInt("Flight", "total_seats"),
         config.getInt("Flight", "total_rows"),
